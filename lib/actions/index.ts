@@ -18,30 +18,31 @@ export async function scrapeAndStoreProduct(productUrl: string) {
 
 		let product = shopeeProduct;
 
+		// Check if product already exists in the database
 		const existingProduct = await Product.findOne({ url: shopeeProduct.url });
-
 		if (existingProduct) {
 			const updatedPriceHistory: any = [
 				...existingProduct.priceHistory,
 				{ price: shopeeProduct.price },
 			];
 
-			product  = {
+			product = {
 				...shopeeProduct,
 				priceHistory: updatedPriceHistory,
 				lowestPrice: getLowestPrice(updatedPriceHistory),
 				highestPrice: getHighestPrice(updatedPriceHistory),
 				averagePrice: getAveragePrice(updatedPriceHistory),
 			};
-			
-			const newProduct = await Product.findOneAndUpdate(
-				{ url: shopeeProduct.url},
-				product,
-				{ upsert: true, new: true }
-			);
-
-			revalidatePath(`/products/${newProduct._id}`);
 		}
+
+		const newProduct = await Product.findOneAndUpdate(
+			{ url: shopeeProduct.url },
+			product,
+			{ upsert: true, new: true }
+		);
+
+		// Revalidates the path of the product page to ensure that the latest data is displayed.
+		revalidatePath(`/products/${newProduct._id}`);
 	} catch (error: any) {
 		throw new Error(`Failed to create/update product ${error.message}`);
 	}

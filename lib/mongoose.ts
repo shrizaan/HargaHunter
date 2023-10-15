@@ -1,19 +1,20 @@
-"use server";
+'use server';
 
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 let isConnected: boolean = false;
 
 export async function connectToDB() {
+	await mongoose.set('strict', true);
+
+	if (!process.env.MONGO_URI) throw new Error('MONGO_URI is not defined');
+
+	if (isConnected) return console.log('=> using existing MongoDB connection');
+
 	try {
-		if (!process.env.MONGO_URI) throw new Error("MONGO_URI is not defined");
-
-		if (isConnected) return console.log("=> using existing database connection");
-
-		await mongoose.set("strict", true);
 		await mongoose.connect(String(process.env.MONGO_URI));
 		isConnected = true;
-		console.log("Database connected successfully");
+		console.log('MongoDB connected successfully');
 	} catch (error: any) {
 		console.log(error.message);
 	}

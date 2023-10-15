@@ -53,7 +53,7 @@ export async function scrapeShopeeProduct(productUrl: string) {
 			highestPrice: Number(price) || Number(regularPrice),
 			averagePrice: Number(price) || Number(regularPrice),
 		};
-		// console.log(response.data.product);
+		console.log(response.data.product);
 		// consle.log(prooductData);
 
 		return productData;
