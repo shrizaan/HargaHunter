@@ -1,12 +1,6 @@
 import * as cheerio from 'cheerio';
 import { PriceHistoryItem, Product } from '../types';
 
-export function cheerioExtractData(response: any) {
-	const $ = cheerio.load(response.data.browserHtml);
-	const productName = $('#productTitle').text().trim();
-}
-
-
 const Notification = {
 	WELCOME: 'WELCOME',
 	CHANGE_OF_STOCK: 'CHANGE_OF_STOCK',
@@ -15,6 +9,39 @@ const Notification = {
 };
 
 const THRESHOLD_PERCENTAGE = 40;
+
+
+// Utils by Me
+export function cheerioExtractData(response: any) {
+	const $ = cheerio.load(response.data.browserHtml);
+	const productName = $('#productTitle').text().trim();
+}
+
+export function extractImages(images: any) {
+	const imageList = images.map((image: any) => image.url);
+	return imageList;
+}
+
+export function extractCategory(category: any) {
+	const selectedCategory = category.slice(1, -1);
+	const categoryList = selectedCategory.map((category: any) => category.name);
+	return categoryList;
+}
+
+export function moneyFormatter(price: number, currency: string) {
+	const formatNumber = price.toLocaleString('id-ID', {
+		style: 'currency',
+		currency: currency,
+	});
+
+	if(currency === 'IDR') {
+		// For example: Rp 100.000,00. I want to remove the last 3 characters.
+		return formatNumber.slice(0, -3);
+		
+	}
+	
+	return  formatNumber;
+}
 
 // Extracts and returns the price from a list of possible elements.
 export function extractPrice(...elements: any) {
@@ -43,7 +70,7 @@ export function extractCurrency(element: any) {
 	return currencyText ? currencyText : '';
 }
 
-// Extracts description from two possible elements from amazon
+
 export function extractDescription($: any) {
 	// these are possible elements holding description of the product
 	const selectors = [
@@ -106,10 +133,10 @@ export const getEmailNotifType = (
 ) => {
 	const lowestPrice = getLowestPrice(currentProduct.priceHistory);
 
-	if (scrapedProduct.currentPrice < lowestPrice) {
+	if (scrapedProduct.price < lowestPrice) {
 		return Notification.LOWEST_PRICE as keyof typeof Notification;
 	}
-	if (!scrapedProduct.isOutOfStock && currentProduct.isOutOfStock) {
+	if (!scrapedProduct.availability && currentProduct.availability) {
 		return Notification.CHANGE_OF_STOCK as keyof typeof Notification;
 	}
 	if (scrapedProduct.discountRate >= THRESHOLD_PERCENTAGE) {
@@ -117,11 +144,4 @@ export const getEmailNotifType = (
 	}
 
 	return null;
-};
-
-export const formatNumber = (num: number = 0) => {
-	return num.toLocaleString(undefined, {
-		minimumFractionDigits: 0,
-		maximumFractionDigits: 0,
-	});
 };

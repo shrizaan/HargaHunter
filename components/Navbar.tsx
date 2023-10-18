@@ -4,7 +4,7 @@ import Image from 'next/image';
 const navIcons = [
 	{ src: '/assets/icons/search.svg', alt: 'search' },
 	{ src: '/assets/icons/black-heart.svg', alt: 'heart' },
-	{ src: 'assets/icons/user.svg', alt: 'user' },
+	{ src: '/assets/icons/user.svg', alt: 'user' },
 ];
 
 const Navbar = () => {
@@ -15,17 +15,17 @@ const Navbar = () => {
 					<Image
 						src="/assets/images/logo.png"
 						alt="description"
-						width={70}
-						height={70}
+						width={40}
+						height={40}
 					/>
 					<p className="nav-logo">
 						<span className="text-primary">Hunter</span>Harga
 					</p>
 				</Link>
 
-				<div className="flex items-center gap-5">
+				<div className="flex items-center gap-3">
 					{navIcons.map((icon) => (
-						<Image 
+						<Image
 							key={icon.alt}
 							src={icon.src}
 							alt={icon.alt}

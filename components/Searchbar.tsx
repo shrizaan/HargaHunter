@@ -29,16 +29,17 @@ const Searchbar = () => {
 
 		const isValidLink = isValidAmazonLink(searchPrompt);
 
-		if (!isValidLink) return alert('Please enter a valid Amazon link');
+		if (!isValidLink) return alert('Please enter a valid Shopee/Tokopedia/BliBli link');
 
 		try {
 			setIsLoading(true);
 
 			// Scrape the product page
 			const product = await scrapeAndStoreProduct(searchPrompt);
+			setSearchPrompt('');
 		} catch (error) {
 			console.error(error);
-		} finally {	
+		} finally {
 			setIsLoading(false);
 		}
 	};
@@ -52,8 +53,11 @@ const Searchbar = () => {
 				value={searchPrompt}
 				onChange={(e) => setSearchPrompt(e.target.value)}
 			/>
-			<button type="submit" className="searchbar-btn"
-			disabled={searchPrompt === ''}>
+			<button
+				type="submit"
+				className="searchbar-btn disabled:cursor-not-allowed"
+				disabled={searchPrompt === '' || isLoading}
+			>
 				{isLoading ? 'Searching...' : 'Search'}
 			</button>
 		</form>
